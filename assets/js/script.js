@@ -73,7 +73,7 @@ window.addEventListener("scroll", function () {
     backTopBtn.classList.add("active");
     hideHeader();
   } else {
-    header.classList.remove("active");
+    header.classList.remove("active", "hide");
     backTopBtn.classList.remove("active");
   }
 });
@@ -167,4 +167,68 @@ window.addEventListener("mousemove", function (event) {
     parallaxItems[i].style.transform = `translate3d(${x}px, ${y}px, 0px)`;
   }
 
+});
+
+
+/**
+ * CLOSE NAVBAR ON LINK CLICK (mobile)
+ */
+
+const navLinks = document.querySelectorAll("[data-nav-link]");
+
+addEventOnElements(navLinks, "click", function () {
+  if (navbar.classList.contains("active")) toggleNavbar();
+});
+
+
+
+/**
+ * RESERVATION FORM
+ *
+ * no backend yet: the request is sent as a pre-filled email
+ */
+
+const reservationForm = document.querySelector("[data-reservation-form]");
+const reservationDate = document.querySelector("[data-reservation-date]");
+const RESERVATION_EMAIL = "massimoporzio2@icloud.com";
+const CLOSED_DAY = 3; // wednesday
+
+const toInputDate = function (date) {
+  const offset = date.getTimezoneOffset() * 60000;
+  return new Date(date - offset).toISOString().slice(0, 10);
+}
+
+reservationDate.min = toInputDate(new Date());
+
+const checkClosedDay = function () {
+  const day = reservationDate.valueAsDate ? reservationDate.valueAsDate.getUTCDay() : null;
+  reservationDate.setCustomValidity(day === CLOSED_DAY ? window.i18n.t("res.closedDay") : "");
+}
+
+reservationDate.addEventListener("input", checkClosedDay);
+
+reservationForm.addEventListener("submit", function (event) {
+  event.preventDefault();
+
+  checkClosedDay();
+  if (!reservationForm.reportValidity()) return;
+
+  const data = new FormData(reservationForm);
+  const guestsLabel = reservationForm.guests.selectedOptions[0].textContent.trim();
+  const sittingLabel = reservationForm.sitting.selectedOptions[0].textContent.trim();
+  const t = window.i18n.t;
+
+  const body = [
+    `${t("res.name")}: ${data.get("name")}`,
+    `${t("res.phone")}: ${data.get("phone")}`,
+    `${t("res.guests")}: ${guestsLabel}`,
+    `${t("res.date")}: ${data.get("date")}`,
+    `${t("res.sitting")}: ${sittingLabel}`,
+    "",
+    data.get("message")
+  ].join("\n");
+
+  const subject = `${t("res.mailSubject")} – ${data.get("date")} ${data.get("sitting")}`;
+
+  window.location.href = `mailto:${RESERVATION_EMAIL}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
 });

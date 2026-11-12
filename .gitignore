@@ -1,0 +1,7 @@
+# archives made for sending to the client
+*.zip
+
+# OS files
+Thumbs.db
+Desktop.ini
+.DS_Store
