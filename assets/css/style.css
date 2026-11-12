@@ -2197,7 +2197,9 @@ textarea.input-field {
 
 .lang-btn {
   color: var(--quick-silver);
-  padding: 6px 4px;
+  min-width: 36px;
+  min-height: 40px;
+  padding: 6px 8px;
   transition: var(--transition-1);
 }
 
@@ -2222,7 +2224,20 @@ textarea.input-field {
   white-space: nowrap;
 }
 
-.menu-card .title-3 { flex-shrink: 0; }
+/* the real photos are 200px; keep thumbnails at the template's size */
+.menu-card .card-banner { width: 100px; }
+
+@media (min-width: 1200px) {
+  .menu-card .card-banner { width: 140px; }
+}
+
+/* let the name, badge and course label wrap in narrow columns */
+.menu-card > div { min-width: 0; }
+
+.menu-card .title-wrapper {
+  flex-wrap: wrap;
+  row-gap: 8px;
+}
 
 
 
